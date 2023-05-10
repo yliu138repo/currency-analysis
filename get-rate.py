@@ -1,5 +1,6 @@
 # Import libraries
 import requests
+import psycopg2
 from bs4 import BeautifulSoup
 import pandas as pd
 from database import Database
@@ -32,8 +33,14 @@ for row in table.findAll("tr"):
 
 if aud_rmb_rate is not None:
     print(f'{aud_rmb_rate} - {timestamp}')
+    try:
+        cursor = db.conn.cursor()
+        cursor.execute("insert into currencyrecord(rate, time) values(%s, %s)", (aud_rmb_rate, timestamp))
+        db.conn.commit()
+    except (Exception, psycopg2.Error) as error :
+        raise Exception(f"DB connection error: ", error)
+    finally:
+        db.disconnect(cursor)
 else:
     print(f'Australian dollar not found')
-    
-
-db.disconnect()
+    db.disconnect()
