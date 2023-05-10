@@ -37,6 +37,8 @@ if aud_rmb_rate is not None:
         cursor = db.conn.cursor()
         cursor.execute("insert into currencyrecord(rate, time) values(%s, %s)", (aud_rmb_rate, timestamp))
         db.conn.commit()
+    except psycopg2.errors.UniqueViolation as uniqueError:
+        print(uniqueError)
     except (Exception, psycopg2.Error) as error :
         raise Exception(f"DB connection error: ", error)
     finally:
