@@ -21,7 +21,7 @@ for row in table.findAll("tr"):
     if len(cells) >=8:
         currency_name = cells[0].findAll(string=True)
         if len(currency_name) > 0 and currency_name[0] == target_currency:
-            aud_rmb_rate = cells[3].findAll(string=True)[0]
+            aud_rmb_rate = float(cells[3].findAll(string=True)[0])
             timestamp = cells[6].findAll(string=True)[0]
             break
 
