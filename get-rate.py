@@ -2,6 +2,11 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+from database import Database
+from config import config
+
+db = Database(config())
+db.connect()
 
 url = "https://www.boc.cn/sourcedb/whpj/"
 page = requests.get(url)
@@ -29,3 +34,6 @@ if aud_rmb_rate is not None:
     print(f'{aud_rmb_rate} - {timestamp}')
 else:
     print(f'Australian dollar not found')
+    
+
+db.disconnect()
