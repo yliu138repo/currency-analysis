@@ -3,7 +3,6 @@ from slack_sdk.errors import SlackApiError
 
 class Notification:
     def __init__(self, not_config) -> None:
-        print(not_config)
         self.__validate__(not_config)
         self.not_config = not_config
         
