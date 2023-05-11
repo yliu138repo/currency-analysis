@@ -1,4 +1,4 @@
-set search_path to public
+set search_path to public;
 
 create table IF NOT EXISTS currencyRecord (
 	id serial PRIMARY KEY,
