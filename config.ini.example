@@ -1,0 +1,9 @@
+[postgresql]
+host=localhost
+database=xxxxxxxxxxx
+user=postgres
+password=xxxxxxxxxxx
+
+[notification]
+api_token=xxxxxxxxxxx
+channel=currency-analysis
