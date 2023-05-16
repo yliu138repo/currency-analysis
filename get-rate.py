@@ -48,6 +48,7 @@ if aud_rmb_rate is not None:
             if aud_rmb_rate - latest_record[1] < 0:
                 notif.send_msg(f"Latest rate: {aud_rmb_rate} @ {timestamp}\nDropped {aud_rmb_rate - latest_record[1]}")
         
+        # Get the lowest value by the last {frequency} days
         frequency = 30
         if notif_config["frequency"] is not None:
             frequency = notif_config["frequency"]        
