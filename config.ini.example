@@ -7,3 +7,4 @@ password=xxxxxxxxxxx
 [notification]
 api_token=xxxxxxxxxxx
 channel=currency-analysis
+frequency=7
