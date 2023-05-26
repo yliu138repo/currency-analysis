@@ -6,6 +6,8 @@ create table IF NOT EXISTS currencyRecord (
 	time TIMESTAMP	NOT NULL
 );
 
+create index currency_record on currencyRecord(time, rate);
+
 
 select rate, time 
 from currencyRecord cr
