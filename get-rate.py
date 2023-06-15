@@ -47,7 +47,7 @@ def get_edge_rate(frequency:int, cursor, high_low: HighLow = HighLow.low):
                 notif.send_msg(f"Lowest rate now!!! {aud_rmb_rate} @ {timestamp} for last {frequency} days\nLast lowest rate: {edge_record[1]} @ {edge_record[0]}\nDropped by {edge_record[1] - aud_rmb_rate}")
         else:
             print(f"Highest rate: {edge_record[1]} @ {edge_record[0]} for last {frequency} days")
-            if edge_record[1] >= aud_rmb_rate:
+            if edge_record[1] <= aud_rmb_rate:
                 notif.send_msg(f"Highest rate now!!! {aud_rmb_rate} @ {timestamp} for last {frequency} days\nLast highest rate: {edge_record[1]} @ {edge_record[0]}\nDropped by {edge_record[1] - aud_rmb_rate}")
 
 for row in table.findAll("tr"):
