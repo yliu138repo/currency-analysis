@@ -13,6 +13,9 @@ select rate, time
 from currencyRecord cr
 order by time DESC;
 
+select count(*) 
+from currencyRecord cr;
+
 SELECT *
 FROM currencyRecord cr
 WHERE  date_trunc('month', cr.time) <= date_trunc('month', current_timestamp) AND

@@ -6,6 +6,7 @@ import pandas as pd
 from database import Database
 from notification import Notification
 from config import config
+from enums import HighLow
 
 notif_config = config(section="notification")
 notif = Notification(notif_config)
@@ -26,19 +27,28 @@ target_currency = "澳大利亚元"
 aud_rmb_rate = None
 timestamp = None
 
-def get_lowest_rate(frequency:int, cursor):
-    select_lowest_value_query = f"""SELECT cr.time, cr.rate
+def get_edge_rate(frequency:int, cursor, high_low: HighLow = HighLow.low):
+    desc = "desc"
+    if high_low.low == high_low:
+        desc = ""
+
+    select_value_query = f"""SELECT cr.time, cr.rate
                                 FROM currencyRecord cr
                                 WHERE  date_trunc('day', cr.time) <= date_trunc('day', current_timestamp) AND
                                 date_trunc('day', cr.time) > date_trunc('day', current_timestamp - interval '{frequency} days')
-                                order by cr.rate limit 1;
+                                order by cr.rate {desc} limit 1;
                                """
-    cursor.execute(select_lowest_value_query)
-    lowest_record = cursor.fetchone()
-    if lowest_record is not None and len(lowest_record) >= 2:
-        print(f"Lowest rate: {lowest_record[1]} @ {lowest_record[0]} for last {frequency} days")
-        if lowest_record[1] >= aud_rmb_rate:
-            notif.send_msg(f"Lowest rate now!!! {aud_rmb_rate} @ {timestamp} for last {frequency} days\nLast lowest rate: {lowest_record[1]} @ {lowest_record[0]}\nDropped by {lowest_record[1] - aud_rmb_rate}")
+    cursor.execute(select_value_query)
+    edge_record = cursor.fetchone()
+    if edge_record is not None and len(edge_record) >= 2:
+        if high_low == HighLow.low:
+            print(f"Lowest rate: {edge_record[1]} @ {edge_record[0]} for last {frequency} days")
+            if edge_record[1] >= aud_rmb_rate:
+                notif.send_msg(f"Lowest rate now!!! {aud_rmb_rate} @ {timestamp} for last {frequency} days\nLast lowest rate: {edge_record[1]} @ {edge_record[0]}\nDropped by {edge_record[1] - aud_rmb_rate}")
+        else:
+            print(f"Highest rate: {edge_record[1]} @ {edge_record[0]} for last {frequency} days")
+            if edge_record[1] >= aud_rmb_rate:
+                notif.send_msg(f"Highest rate now!!! {aud_rmb_rate} @ {timestamp} for last {frequency} days\nLast highest rate: {edge_record[1]} @ {edge_record[0]}\nDropped by {edge_record[1] - aud_rmb_rate}")
 
 for row in table.findAll("tr"):
     cells = row.findAll("td")
@@ -66,11 +76,13 @@ if aud_rmb_rate is not None:
         frequency = 30
         if notif_config["frequency"] is not None:
             frequency = notif_config["frequency"]        
-        get_lowest_rate(frequency, cursor)
+        get_edge_rate(frequency, cursor)
+        get_edge_rate(frequency, cursor, HighLow.high)
         
-        if notif_config["frequency"] is not None:
+        if notif_config["frequency2"] is not None:
             frequency = notif_config["frequency2"]
-        get_lowest_rate(frequency, cursor)
+        get_edge_rate(frequency, cursor)
+        get_edge_rate(frequency, cursor, HighLow.high)
                                  
         # insert latest data into database
         cursor.execute("insert into currencyrecord(rate, time) values(%s, %s)", (aud_rmb_rate, timestamp))
